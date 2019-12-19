@@ -29,6 +29,17 @@ if(WIN32)
   set(CMAKE_DEBUG_POSTFIX "d")
 endif()
 
+#differentiate between ios and osx
+if(APPLE)
+  if(IOS)
+  set(IOS_CORE ON)
+  set(OSX_CORE OFF)
+  else()
+  set(IOS_CORE OFF)
+  set(OSX_CORE ON)
+  endif()
+endif()
+
 # Build Options
 option(BUILD_SHARED_LIBS "Compile library shared lib." TRUE)
 option(BUILD_STATIC_LIBS "Compile library static lib." TRUE)
@@ -44,7 +55,8 @@ option(RTAUDIO_API_OSS "Build OSS4 API" ${xBSD})
 option(RTAUDIO_API_ALSA "Build ALSA API" ${LINUX})
 option(RTAUDIO_API_PULSE "Build PulseAudio API" ${pulse_FOUND})
 option(RTAUDIO_API_JACK "Build JACK audio server API" ${HAVE_JACK})
-option(RTAUDIO_API_CORE "Build CoreAudio API" ${APPLE})
+option(RTAUDIO_API_CORE "Build CoreAudio OSX API" ${OSX_CORE})
+option(RTAUDIO_API_IOS "Build IOS API" ${IOS_CORE})
 
 # Check for functions
 include(CheckFunctionExists)
@@ -152,6 +164,16 @@ if (RTAUDIO_API_CORE)
   list(APPEND LINKLIBS ${COREAUDIO_LIB} ${COREFOUNDATION_LIB})
   list(APPEND API_DEFS "-D__MACOSX_CORE__")
   list(APPEND API_LIST "core")
+endif()
+
+# IOS
+if (RTAUDIO_API_IOS)
+  find_library(COREAUDIO_LIB CoreAudio)
+  find_library(COREFOUNDATION_LIB CoreFoundation)
+  list(APPEND LINKLIBS ${COREAUDIO_LIB} ${COREFOUNDATION_LIB})
+  list(APPEND API_DEFS "-D__MACIOS_CORE__")
+  list(APPEND API_DEFS "-D__MACOSX_CORE__")
+  list(APPEND API_LIST "ios")
 endif()
 
 # ASIO

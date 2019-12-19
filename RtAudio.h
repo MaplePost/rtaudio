@@ -884,8 +884,15 @@ inline void RtAudio :: showWarnings( bool value ) { rtapi_->showWarnings( value 
 // RtApi Subclass prototypes.
 
 #if defined(__MACOSX_CORE__)
+#if defined(__MACIOS_CORE__)
+#import <AudioToolbox/AudioToolbox.h>
+#import <AVFoundation/AVFoundation.h>
+#import <CoreMIDI/MIDIServices.h>
 
+#else
 #include <CoreAudio/AudioHardware.h>
+
+#endif
 
 class RtApiCore: public RtApi
 {
