@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(RtAudio, 5.0.0, gary@music.mcgill.ca, rtaudio)
+AC_INIT(RtAudio, 5.1.0, gary@music.mcgill.ca, rtaudio)
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_SRCDIR(RtAudio.cpp)
 AC_CONFIG_FILES([rtaudio.pc Makefile tests/Makefile doc/Makefile doc/doxygen/Doxyfile])
@@ -19,7 +19,7 @@ AM_INIT_AUTOMAKE([1.14 -Wall -Werror foreign subdir-objects])
 # If any interfaces have been removed since the last public release, then set
 # age to 0.
 m4_define([lt_current], 6)
-m4_define([lt_revision], 0)
+m4_define([lt_revision], 1)
 m4_define([lt_age], 0)
 
 m4_define([lt_version_info], [lt_current:lt_revision:lt_age])
@@ -35,6 +35,9 @@ api=""
 req=""
 use_asio=""
 
+# standards version
+m4_include([m4/ax_cxx_compile_stdcxx.m4])
+AX_CXX_COMPILE_STDCXX(11, noext, mandatory)
 
 # configure flags
 AC_ARG_ENABLE(debug, [AS_HELP_STRING([--enable-debug],[enable various debug output])])
@@ -44,7 +47,7 @@ AC_ARG_WITH(pulse, [AS_HELP_STRING([--with-pulse], [choose PulseAudio API suppor
 AC_ARG_WITH(oss, [AS_HELP_STRING([--with-oss], [choose OSS API support (unixes)])])
 AC_ARG_WITH(core, [AS_HELP_STRING([--with-core], [choose CoreAudio API support (mac only)])])
 AC_ARG_WITH(asio, [AS_HELP_STRING([--with-asio], [choose ASIO API support (win32 only)])])
-AC_ARG_WITH(ds, [AS_HELP_STRING([--with-ds], [choose DirectSound API support (win32 only)])])
+AC_ARG_WITH(dsound, [AS_HELP_STRING([--with-dsound], [choose DirectSound API support (win32 only)])])
 AC_ARG_WITH(wasapi, [AS_HELP_STRING([--with-wasapi], [choose Windows Audio Session API support (win32 only)])])
 
 # Check version number coherency between RtAudio.h and configure.ac
@@ -86,8 +89,8 @@ AC_CHECK_HEADERS(sys/ioctl.h unistd.h)
 AS_IF([test "x${GXX}" = "xyes" ], [
   CXXFLAGS="-Wall -Wextra ${CXXFLAGS}"
   AS_IF([ test "x${enable_debug}" = "xyes" ], [
-    # Add -Werror in debug mode (except unused-function)
-    CXXFLAGS="-Werror -Wno-error=unused-function ${CXXFLAGS}"
+    # Add -Werror in debug mode
+    CXXFLAGS="-Werror ${CXXFLAGS}"
   ], [
     # hide private symbols in non-debug mode
     visibility="-fvisibility=hidden"
